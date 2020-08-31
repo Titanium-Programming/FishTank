@@ -58,9 +58,7 @@
 						fps: 0, //the frames per second
 						pfps: 0, //the past fps
 						update: function() {
-							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time 
-
-divided by 1000)
+							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time divided by 1000)
 							this.frames ++; // makes the frame number increase
 							void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is 
 
