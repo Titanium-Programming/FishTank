@@ -1,27 +1,528 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset = "utf-8"/>
-        <meta name = "author" content = "Titanium Programming"/>
-        <title>Go away >:(</title>
-        <style>
-            @keyframes spin{
-                from {
-                    transform: rotateY(180deg);
-                }
-                to {
-                    transform: rotateY(0deg);
-                }
-            }
-            #canvas {
-                animation: spin 0.6s;
-            }
-        </style>
-    </head>
-    <body>
-        <main>
-            <canvas id = "canvas" width = "600" height = "600"></canvas>
-        </main>
-        <script></script>
-    </body>
+<html lang="en">
+	<head>
+		<!--the title-->
+		<title>Fish Tank</title>
+		<!--tells the browser to use utf-8-->
+		<meta charset="utf-8">
+		<!--the creator-->
+		<meta name="author" content="Titanium Programming">
+		<!--the description-->
+		<meta name="description" content="A fish tower defence">
+		<!--css-->
+		<style>
+			@keyframes come-out-of-nowhere {
+				from {
+					transform: rotateY(-360deg) scale(0); /*rotates it and makes it small*/
+					opacity: 0; /*makes it transparent*/
+				} /*when the animation starteds*/
+				to {
+					transform: rotateY(0deg) scale(1); /*makes it not rotated and makes it visible*/
+					opacity: 1; /*makes it not transparent*/
+				} /*when the animation ends*/
+			}
+			body {
+				overflow: hidden; /*gets rid of scroll bar*/
+				font-family: arial, sans-serif; /*sets the font family to arial or sans serif*/
+				-webkit-font-smoothing: antialiased; /*makes the font smooth*/
+				-moz-osx-font-smoothing: grayscale; /*makes the font smooth*/
+				font-smooth: always; /*makes the font smooth*/
+				transform-style: preserve-3d; /*makes it 3d*/
+				perspective: 1000px; /*adds a 1000 pixel prespective*/
+				margin: 0; /*gets rid of the 8px margin*/
+				background-color: black; /*adds a black background*/
+			} /*the body*/
+			* {
+				transition-duration: 0.6s; /*gives it a transition duration of 0.6 seconds*/
+			} /*everything*/
+		</style>
+	</head>
+	<body>
+		<!--the main stuff in the webpage-->
+		<main>
+			<!--the game canvas-->
+			<canvas id="canvas" width="600" height="600" tabindex="0" style="cursor: default; margin-left: -206.5px; margin-top: 199px;"></canvas>
+		</main>
+		<!--JavaScript-->
+		<script>
+			console.clear(); // clears the console
+			{
+				var canvas = document.getElementById("canvas"), //gets the canvas
+				ctx = canvas.getContext("2d"); //gets a 2d context
+				void(!ctx && (alert("Your browser does not support the HTML5 canvas element"))); //if HTML5 canvas element is not supported, tell the user
+				var system = {
+					frames: 0, //frames displayed
+					fps: {
+						start: 0, // the starting time
+						frames: 0, //the current frame
+						fps: 0, //the frames per second
+						pfps: 0, //the past fps
+						update: function() {
+							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time divided by 1000)
+							this.frames ++; // makes the frame number increase
+							void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is bigger than 2, make the start time the currrent time and make frames 0
+							this.fps = this.pfps === NaN?this.fps:this.pfps; // if the past FPS is not a number, do nothing, otherwise, turn it to the past FPS
+						}, // updates the frames per second
+					}, // the frames per second (credits to @willard12 for helping)
+					mouse: {
+						x: 0, // the x position of the mouse
+						y: 0, // the y position of the mouse
+						clicked: false // did the user click there mouse?
+					} // the mouse
+				}, // the system
+				
+				smooth = function(pos, dest, time) {
+					return (dest - pos) / time;
+				}, // the smooth function (credits to loyalty (https://www.khanacademy.org/profile/loyaltyKA))
+				
+				drawFish = function(x, y, w/*width*/, h/*eight*/, c/*olor*/, s/*peed*/) {
+					void(s === null || s === undefined && (s = 0)); // if the speed is undefined or null, just make the speed to 0
+					s *= 10; // makes the fish tail faster
+					ctx.save(); // saves the matrixes (translate, scale, rotate)
+					ctx.translate(x - (w / 2), y - (h / 2)); // moves the fish to the center
+					ctx.scale(w / 275, h / 120); // resizes the fish
+					ctx.fillStyle = c; // fills it the color you pass in
+					//the head
+					ctx.beginPath();
+					ctx.ellipse(175, 60, 200 / 2, 117 / 2, 0, 0, Math.PI * 2);
+					ctx.fill();
+					//the tail
+					ctx.beginPath();
+					ctx.lineTo(75, 60);
+					ctx.lineTo((Math.cos((system.frames * s) / 180 * Math.PI) * 50), 120);
+					ctx.lineTo((Math.cos((system.frames * s) / 180 * Math.PI) * 50), 0);
+					ctx.fill();
+					//the eye
+					ctx.fillStyle = "black";
+					ctx.beginPath();
+					ctx.ellipse(241, 60, 20 / 2, 20 / 2, 0, 0, Math.PI * 2);
+					ctx.fill();
+					//popMatrix();
+					ctx.restore();
+				}, //the draw fish function (credits @pamelafox)
+				//transitions
+				transition = {
+					//the x position of the fish
+					x: -1373,
+					//is the transition active?
+					active: false,
+					//where to go after the transition
+					to: "",
+					//the color of the fish
+					color: "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")",
+					//runs the transition
+					run: function() {
+						//makes the x position increase with the velocity
+						this.x += 30;
+						//draws a fish in its position
+						drawFish(this.x, 300, 1587, 681, this.color, 0);
+						//if the transition covered the screen, change the scene to this.to
+						void(this.x >= 78 && (scene = this.to));
+						//if the transition is hover, just stop it
+						void(this.x >= 1388 && ((this.active = false) + (this.x = -1373) + (this.color = "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")")));
+					},
+				};
+			} //sets the canvas
+			{
+				//a array to store the intro particles
+				var introParticles = [],
+				//the intro particle constructor
+				IntroParticle = function() {
+					//the choice
+					this.choice = Math.round(Math.random());
+					//makes the position random
+					this.x = Math.random() * canvas.width;
+					this.y = Math.random() * canvas.height;
+					//the alpha
+					this.a = 0;
+					//switches the choice
+					switch(this.choice) {
+						//if the choice is 1
+						case 0:
+							//make the top part of the T
+							this.realX = Math.random() * (canvas.width / 2.325581395348837 - canvas.width / 1.818181818181818) + canvas.width / 1.818181818181818;
+							this.realY = Math.random() * (canvas.height / 3.333333333333333 - canvas.height / 1.428571428571429) + canvas.height / 1.428571428571429;
+							break;
+						//if the choice is 1
+						case 1:
+							//make the stick on the T
+								
+							this.realX = Math.random() * (canvas.width / 2.941176470588235 - canvas.width / 1.51515151515151) + canvas.width / 1.51515151515151;
+							this.realY = Math.random() * (canvas.height / 5.813953488372093 - canvas.height / 3.333333333333333) + canvas.height / 3.333333333333333;
+					}
+					//updates the particle
+					this.update = function() {
+						//makes the position become the real position
+						this.x += smooth(this.x, this.realX, 60);
+						this.y += smooth(this.y, this.realY, 60);
+						//makes the alpha smoothly get to 255
+						this.a += smooth(this.a, 255, 60);
+						//fills it from green to black
+						ctx.fillStyle = "rgb(0, " + (Math.abs(Math.sin((this.x + this.y + system.frames) / 180 * Math.PI) * (255 - 150) + 150)) + ", 0, " + (this.a / 255) + ")";
+						//the particle
+						ctx.fillRect(this.x, this.y, canvas.width / 25, canvas.height / 25);
+					};
+				};
+			} //the intro stuff
+			{
+				//the track
+				var track = [
+					{
+						x: 0,
+						y: 0
+					},
+					{
+						x: 220,
+						y: 220
+					},
+					{
+						x: 110,
+						y: 260
+					},
+					{
+						x: 600,
+						y: 600
+					}
+				],
+				//the base health
+				baseHealth = 100,
+				//a array to store evil fishs
+				evilFishs = [],
+				//the evil fish constructor
+				EvilFish = function(config) {
+					//the position of the fish
+					this.x = track[0].x;
+					this.y = track[0].y;
+					//the current step
+					this.step = 1;
+					//the speed
+					this.speed = config.speed || 1;
+					//updates the fish
+					this.update = function() {
+						//make the fish follow the track
+						this.x += Math.sin((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed;
+						this.y += Math.cos((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed;
+						//if the fish is at the track
+						if(Math.round(this.x) === track[this.step].x && Math.round(this.y) === track[this.step].y) {
+							//if the current step is not 3, make it follow the next track
+							if(this.step !== 3) {
+								this.step ++;
+							} else {
+								
+							}
+						}
+						
+					};
+				};
+			} // the game stuff
+			{
+				//a array to store the background fishies
+				var backgroundFishies = [],
+				//the background fishies
+				BackgroundFishie = function(size) {
+					//the position of the fish
+					this.x = Math.random() * (650 - (-50)) + -50;
+					this.y = Math.random() * 600;
+					//the speed
+					this.speedX = Math.random() * (7 - (-7)) + -7;
+					this.speedY = ((Math.random() * (7 - 5) + 5) / 5) + (size / 20);
+					void(this.speedX < 3 && this.speedX > 0 && (this.speedX += 2 + (this.speedY += 0.2)));
+					void(this.speedX > -3 && this.speedX < 0 && (this.speedX -= 2 + (this.speedY += 0.2)));
+					//the color
+					this.color = "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")";
+					//updates the fish
+					this.update = function() {
+						//makes the x position increase by the speed
+						this.x += this.speedX;
+						this.y += this.speedY;
+						//draws a fish on its position
+						void(this.speedX < 0 && (drawFish(this.x, this.y, -50 - size, 21.81818181818182 + size, this.color, size)));
+						void(this.speedX > 0 && (drawFish(this.x, this.y, 50 + size, 21.81818181818182 + size, this.color, size)));
+						void(this.x > 650 && (this.x = -50));
+						void(this.x < -50 && (this.x = 650));
+						void(this.y > 650 && (this.y = -50));
+					};
+				},
+				//the background function
+				background = function() {
+					//adds a blue background
+					ctx.fillStyle = "rgb(12, 152, 245)";
+					ctx.fillRect(0, 0, 600, 600);
+					//updates all of the fishies
+					for(var i = backgroundFishies.length - 1; i >= 0; i --) {
+						backgroundFishies[i].update();
+					}
+				},
+				//adds 5 fishies for the background
+				addFish = (function () {
+					for(var i = 0; i < 15; i ++) {
+						backgroundFishies.push(new BackgroundFishie(i / 2));
+					}
+				})();
+			} //the background stuff
+			{
+				var Button = function(config) {
+					//the position of the button
+					this.x = config.x || 0;
+					this.y = config.y || 0;
+					//the width and height of the button
+					this.w = config.w || 100;
+					this.h = config.h || 50;
+					//the blue things
+					this.lY = 0;
+					//what to do when the mouse is clicked
+					this.func = config.func || function() {};
+					//the text on the button
+					this.txt = config.txt || "";
+					//updates the button
+					this.update = function() {
+						//if the mouse is inside the button
+						if(system.mouse.x > this.x - (this.w / 2) && system.mouse.x < this.x + (this.w / 2) && system.mouse.y > this.y - (this.h / 2) && system.mouse.y < this.y + (this.h / 2)) {
+							this.lY += smooth(this.lY, this.h / 2, 10);
+							//if the mouse is clicked, and the transition is not active, do this.func();
+							if(system.mouse.clicked && !transition.active) {
+								this.func();
+							}
+							//change the cursor to pointer
+							canvas.style.cursor = "pointer";
+						} else {
+							//make this.lY smoothly get to 0
+							this.lY += smooth(this.lY, 0, 10);
+						}
+						//the button
+						ctx.strokeStyle = "white";
+						ctx.strokeRect(this.x - (this.w / 2), this.y - (this.h / 2), this.w, this.h);
+						ctx.fillStyle = "rgb(0, 0, 255, 0.2)";
+						ctx.fillRect(this.x - (this.w / 2), this.y - (this.h / 2), this.w, this.lY);
+						ctx.fillRect(this.x - (this.w / 2), this.y + (this.h / 2), this.w, this.lY * -1);
+						ctx.fillStyle = "white";
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.font = "20px sans-serif";
+						ctx.fillText(this.txt, this.x, this.y);
+					};
+				};
+				
+				//anti hackerz
+				if(document.querySelectorAll("meta[content*=Titanium]").length < 1) {throw "Please don\'t copy my work.";}
+				
+				var playBtn = new Button({
+					x: 300,
+					y: 350,
+					txt: "Play",
+				}),
+				creditsBtn = new Button({
+					x: 300,
+					y: 250,
+					txt: "Credits",
+					func: function() {
+						transition.to = "credits";
+						transition.active = true;
+					}
+				}),
+				aboutBtn = new Button({
+					x: 500,
+					y: 350,
+					txt: "About",
+					func: function() {
+						transition.active = true;
+						transition.to = "about";
+					}
+				}),
+				storyBtn = new Button({
+					x: 100,
+					y: 350,
+					txt: "Story",
+					func: function() {
+						transition.active = true;
+						transition.to = "story";
+					}
+				}),
+				howBtn = new Button({
+					x: 300,
+					y: 450,
+					txt: "How",
+					func: function() {
+						transition.active = true;
+						transition.to = "how";
+					}
+				}),
+				backBtn = new Button({
+					x: 300,
+					y: 500,
+					w: 200,
+					h: 70,
+					txt: "Back",
+					func: function() {
+						transition.to = "menu";
+						transition.active = true;
+					}
+				});
+			} //buttons
+			{
+				//the current scene
+				var scene = "intro",
+				//the scenes
+				scenes = {
+					intro: function() {
+						//fills the background black
+						ctx.fillStyle = "black";
+						//the background
+						ctx.fillRect(0, 0, 600, 600);
+						//updates all of the particles
+						for(var i = 0; i < introParticles.length; i ++) {
+							introParticles[i].update();
+						}
+						//if there is less than 160 particles, add a new particle
+						void(introParticles.length < 160 && (introParticles.push(new IntroParticle())));
+						//if the frame is greater than 500, make the transition active
+						void(system.frames > 500 && (transition.active = true + (transition.to = "menu")));
+					},
+					menu: function() {
+						background();
+						ctx.font = "102px impact";
+						ctx.strokeStyle = "white";
+						ctx.lineWidth = 2;
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.strokeText("Fish Tank", 300, 89);
+						ctx.textAlign = "right";
+						ctx.textBaseline = "top";
+						ctx.font = "26px impact";
+						ctx.fillStyle = "white";
+						ctx.fillText("By: \xA9 2020 Titanium Programming", 499, 130);
+						//updates all of the buttons
+						playBtn.update();
+						creditsBtn.update();
+						howBtn.update();
+						aboutBtn.update();
+						storyBtn.update();
+					},
+					credits: function() {
+						background();
+						ctx.font = "102px impact";
+						ctx.strokeStyle = "white";
+						ctx.lineWidth = 2;
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.strokeText("Credits", 300, 89);
+						var txt = "Doctor317 - try {} catch() {}\n\nCaven P./Loyalty - smooth function\n\nPamela - fish graphics";
+						ctx.fillStyle = "white";
+						ctx.font = "20px sans-serif";
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.save();
+						ctx.translate(0, -((txt.split("\n").length * 20) / 2));
+						for(var i = 0; i < txt.split("\n").length; i ++) {
+							ctx.fillText(txt.split("\n")[i], 300, (300 + (i * 20)));
+						}
+						ctx.restore();
+						backBtn.update();
+					},
+					how: function() {
+						background();
+						ctx.font = "102px impact";
+						ctx.strokeStyle = "white";
+						ctx.lineWidth = 2;
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.strokeText("How", 300, 89);
+						var txt = "Click on the shop button and click on any\ntower to buy it, the towers shoot will enemy\nthat\'s the closest to the tower. Try to make\nthe enemy fishes stay out of your fish 
+
+country\nor else... idk";
+						ctx.fillStyle = "white";
+						ctx.font = "20px sans-serif";
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.save();
+						ctx.translate(0, -((txt.split("\n").length * 20) / 2));
+						for(var i = 0; i < txt.split("\n").length; i ++) {
+							ctx.fillText(txt.split("\n")[i], 300, (300 + (i * 20)));
+						}
+						ctx.restore();
+						backBtn.update();
+					},
+					about: function() {
+						background();
+						ctx.font = "102px impact";
+						ctx.strokeStyle = "white";
+						ctx.lineWidth = 2;
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.strokeText("About", 300, 89);
+						var txt = "This program was made because I was\nbored.";
+						ctx.fillStyle = "white";
+						ctx.font = "20px sans-serif";
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.save();
+						ctx.translate(0, -((txt.split("\n").length * 20) / 2));
+						for(var i = 0; i < txt.split("\n").length; i ++) {
+							ctx.fillText(txt.split("\n")[i], 300, (300 + (i * 20)));
+						}
+						ctx.restore();
+						backBtn.update();
+					},
+					story: function() {
+						background();
+						ctx.font = "102px impact"; // makes the text size 102 pixels
+						ctx.strokeStyle = "white"; // adds a white stroke
+						ctx.lineWidth = 2; // adds a stroke weight of 2 pixels
+						ctx.textAlign = "center"; // aligns the text to the center
+						ctx.textBaseline = "middle"; // aligns the text to the center
+						ctx.strokeText("Story", 300, 89); // the text that says "story"
+						var txt = "Fish war III just started\nand some fish country\nrandomly started to send\na bunch of fish troops to\nattack your fish country"; // the text
+						ctx.fillStyle = "white"; // fills it white
+						ctx.font = "20px sans-serif"; // makes the text size 20 pixels
+						ctx.textAlign = "center"; // aligns the text to the center
+						ctx.textBaseline = "middle"; // aligns the text to the center
+						ctx.save(); // saves the matrixes
+						ctx.translate(0, -((txt.split("\n").length * 20) / 2)); // aligns the text
+						for(var i = 0; i < txt.split("\n").length; i ++) {
+							ctx.fillText(txt.split("\n")[i], 300, (300 + (i * 20))); // displays the text
+						} // goes though the text
+						ctx.restore(); // gets rid of matrixes
+						backBtn.update(); // updates the back button
+					}, // the story
+				};
+			} // the scenes
+			{
+				var loop = setInterval(function() {
+					try {
+						//changes the cursor to default
+						canvas.style.cursor = "default";
+						//increases the frame counter
+						system.frames ++;
+						ctx.clearRect(0, 0, 600, 600); // clears the canvas
+						scenes[scene](); // does whats in the current scene
+						ctx.textAlign = "left"; // aligns the text to the left
+						ctx.textBaseline = "top"; // aligns the text to the top
+						ctx.font = "12px arial, sans-serif"; // makes the text size 12 pixels
+						system.fps.update(); // updates the frames per second
+						ctx.fillStyle = "black"; // fills the fps black
+						ctx.fillText("FPS: " + system.fps.fps, 0, 0); // the frames per second
+						void(transition.active && (transition.run())); // if the transition is active, run the transition
+						system.mouse.clicked = false; // turns clicked to false
+					} //trys to catch errors
+					catch(err) {
+						clearInterval(loop); // stops the loop
+						console.error("Something went wrong\n" + err); // adds a error in the console
+					} // if the computer catches a error
+					canvas.style.marginLeft = window.innerWidth / 2 - (canvas.width / 2) + "px"; // aligns the canvas
+					canvas.style.marginTop = window.innerHeight / 2 - (canvas.height / 2) + "px"; // aligns the canvas
+				}, 1000 / 60); // does this 60 times a second
+			} // the loop
+			{
+				canvas.addEventListener("click", function(event) {
+					event.preventDefault(); // makes the normal stuff not happen
+					system.mouse.clicked = true; // makes mouse.clicked true
+				}); // adds a event listener for mouse clickes
+				canvas.addEventListener("mousemove", function(event) {
+					event.preventDefault(); // makes the normal stuff not happen
+					system.mouse.x = event.layerX; // updates the mouse coordinates
+					system.mouse.y = event.layerY; // updates the mouse coordinates
+				}); // adds a event listener for mouse moves
+			} // event listeners
+		</script>
+	</body>
 </html>
