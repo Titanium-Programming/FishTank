@@ -58,9 +58,13 @@
 						fps: 0, //the frames per second
 						pfps: 0, //the past fps
 						update: function() {
-							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time divided by 1000)
+							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time 
+
+divided by 1000)
 							this.frames ++; // makes the frame number increase
-							void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is bigger than 2, make the start time the currrent time and make frames 0
+							void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is 
+
+bigger than 2, make the start time the currrent time and make frames 0
 							this.fps = this.pfps === NaN?this.fps:this.pfps; // if the past FPS is not a number, do nothing, otherwise, turn it to the past FPS
 						}, // updates the frames per second
 					}, // the frames per second (credits to @willard12 for helping)
