@@ -28,35 +28,35 @@
 		<!--the main stuff in the webpage-->
 		<main>
 			<!--the game canvas-->
-			<canvas id="canvas" width="600" height="600" tabindex="0" style="cursor: default; margin-left: -206.5px; margin-top: 199px;"></canvas>
+			<canvas id="canvas" width="600" height="600" tabindex="0" style="cursor: default;"></canvas>
 		</main>
 		<!--JavaScript-->
 		<script>
 			console.clear(); // clears the console
 			{
 				var canvas = document.getElementById("canvas"), //gets the canvas
-				ctx = canvas.getContext("2d"); //gets a 2d context
-				void(!ctx && (alert("Your browser does not support the HTML5 canvas element"))); //if HTML5 canvas element is not supported, tell the user
-				var system = {
-					frames: 0, //frames displayed
-					fps: {
-						start: 0, // the starting time
-						frames: 0, //the current frame
-						fps: 0, //the frames per second
-						pfps: 0, //the past fps
-						update: function() {
-							this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time divided by 1000)
-							this.frames ++; // makes the frame number increase
-							void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is bigger than 2, make the start time the currrent time and make frames 0
-							this.fps = this.pfps === NaN?this.fps:this.pfps; // if the past FPS is not a number, do nothing, otherwise, turn it to the past FPS
-						}, // updates the frames per second
-					}, // the frames per second (credits to @willard12 for helping)
-					mouse: {
-						x: 0, // the x position of the mouse
-						y: 0, // the y position of the mouse
-						clicked: false // did the user click there mouse?
-					} // the mouse
-				}, // the system
+					ctx = canvas.getContext("2d"), //gets a 2d context
+					cfces = (function() {void(!ctx && (alert("Your browser does not support the HTML5 canvas element")));})(), //if HTML5 canvas element is not supported, tell the user
+					system = {
+						frames: 0, //frames displayed
+						fps: {
+							start: 0, // the starting time
+							frames: 0, //the current frame
+							fps: 0, //the frames per second
+							pfps: 0, //the past fps
+							update: function() {
+								this.pfps = Math.round((this.frames / (((new Date().getTime()) - this.start) / 1000))); // makes the past FPS the current frame divied by (the current time minus the start time divided by 1000)
+								this.frames ++; // makes the frame number increase
+								void((((new Date().getTime()) - this.start) / 1000) > 1 && ((this.start = new Date().getTime()) + (this.frames = 0))); // if the current time minus the start time divided by 1000 is bigger than 2, make the start time the currrent time and make frames 0
+								this.fps = this.pfps === NaN?this.fps:this.pfps; // if the past FPS is not a number, do nothing, otherwise, turn it to the past FPS
+							}, // updates the frames per second
+						}, // the frames per second (credits to @willard12 for helping)
+						mouse: {
+							x: 0, // the x position of the mouse
+							y: 0, // the y position of the mouse
+							clicked: false // did the user click there mouse?
+						} // the mouse
+					}, // the system
 				
 					smooth = function(pos, dest, time) {
 						return (dest - pos) / time;
@@ -78,76 +78,51 @@
 						ctx.lineTo((Math.cos((system.frames * s) / 180 * Math.PI) * 50), 0); // the tail
 						ctx.fill(); // fills the tail
 						ctx.fillStyle = "black"; // fills the eye black
-						ctx.beginPath(); // starts the circ;e
+						ctx.beginPath(); // starts the circle
 						ctx.ellipse(241, 60, 20 / 2, 20 / 2, 0, 0, Math.PI * 2); // the eye
 						ctx.fill(); // fills the circle
 						ctx.restore(); // popMatrix();
-					}, //the draw fish function (credits @pamelafox)
+					}, // the draw fish function (credits to pamela fox)
 					transition = {
-						//the x position of the fish
-						x: -1373,
-						//is the transition active?
-						active: false,
-						//where to go after the transition
-						to: "",
-						//the color of the fish
-						color: "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")",
-						//runs the transition
+						x: -1373, // the x position of the fish
+						active: false, // is the transition active?
+						to: "", // where to go after the transition
+						color: "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")", // the color of the fish
 						run: function() {
-							//makes the x position increase with the velocity
-							this.x += 30;
-							//draws a fish in its position
-							drawFish(this.x, 300, 1587, 681, this.color, 0);
-							//if the transition covered the screen, change the scene to this.to
-							void(this.x >= 78 && (scene = this.to));
-							//if the transition is hover, just stop it
-							void(this.x >= 1388 && ((this.active = false) + (this.x = -1373) + (this.color = "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")")));
-						},
+							this.x += 30; // makes the x position increase with the velocity
+							drawFish(this.x, 300, 1587, 681, this.color, 0); // draws a fish in its position
+							void(this.x >= 78 && (scene = this.to)); // if the transition covered the screen, change the scene to this.to
+							void(this.x >= 1388 && ((this.active = false) + (this.x = -1373) + (this.color = "rgb(" + (Math.random() * 255) + ", " + (Math.random() * 255) + ", " + (Math.random() * 255) + ")"))); // if the transition is over, just stop it
+						}, // runs the transition
 					}; // the transition
 			} // sets the canvas
 			{
-				//a array to store the intro particles
-				var introParticles = [],
-					//the intro particle constructor
+				var introParticles = [], // a array to store the intro particles
 					IntroParticle = function() {
-						//the choice
-						this.choice = Math.round(Math.random());
-						//makes the position random
-						this.x = Math.random() * canvas.width;
-						this.y = Math.random() * canvas.height;
-						//the alpha
-						this.a = 0;
-						//switches the choice
+						this.choice = Math.round(Math.random()); // the choice
+						this.x = Math.random() * canvas.width; // makes the position random
+						this.y = Math.random() * canvas.height; // makes the position random
+						this.a = 0; // the alpha
 						switch(this.choice) {
-							//if the choice is 1
-							case 0:
-								//make the top part of the T
-								this.realX = Math.random() * (canvas.width / 2.325581395348837 - canvas.width / 1.818181818181818) + canvas.width / 1.818181818181818;
-								this.realY = Math.random() * (canvas.height / 3.333333333333333 - canvas.height / 1.428571428571429) + canvas.height / 1.428571428571429;
+							case 0: // if the choice is 1
+								this.realX = Math.random() * (canvas.width / 2.325581395348837 - canvas.width / 1.818181818181818) + canvas.width / 1.818181818181818; // make the stick on the top of the T
+								this.realY = Math.random() * (canvas.height / 3.333333333333333 - canvas.height / 1.428571428571429) + canvas.height / 1.428571428571429; // make the stick on the top of the T
 								break;
-							//if the choice is 1
-							case 1:
-								//make the stick on the T
-
-								this.realX = Math.random() * (canvas.width / 2.941176470588235 - canvas.width / 1.51515151515151) + canvas.width / 1.51515151515151;
-								this.realY = Math.random() * (canvas.height / 5.813953488372093 - canvas.height / 3.333333333333333) + canvas.height / 3.333333333333333;
+							case 1: // if the choice is 1
+								this.realX = Math.random() * (canvas.width / 2.941176470588235 - canvas.width / 1.51515151515151) + canvas.width / 1.51515151515151; // make the stick on the bottom of the T
+								this.realY = Math.random() * (canvas.height / 5.813953488372093 - canvas.height / 3.333333333333333) + canvas.height / 3.333333333333333; // make the stick on the bottom of the T
 						}
 						//updates the particle
 						this.update = function() {
-							//makes the position become the real position
-							this.x += smooth(this.x, this.realX, 60);
-							this.y += smooth(this.y, this.realY, 60);
-							//makes the alpha smoothly get to 255
-							this.a += smooth(this.a, 255, 60);
-							//fills it from green to black
-							ctx.fillStyle = "rgb(0, " + (Math.abs(Math.sin((this.x + this.y + system.frames) / 180 * Math.PI) * (255 - 150) + 150)) + ", 0, " + (this.a / 255) + ")";
-							//the particle
-							ctx.fillRect(this.x, this.y, canvas.width / 25, canvas.height / 25);
+							this.x += smooth(this.x, this.realX, 60); // makes the position become the real position
+							this.y += smooth(this.y, this.realY, 60); // makes the position become the real position
+							this.a += smooth(this.a, 255, 60); // makes the alpha smoothly get to 255
+							ctx.fillStyle = "rgb(0, " + (Math.abs(Math.sin((this.x + this.y + system.frames) / 180 * Math.PI) * (255 - 150) + 150)) + ", 0, " + (this.a / 255) + ")"; // fills it from green to black
+							ctx.fillRect(this.x, this.y, canvas.width / 25, canvas.height / 25); // the particle
 						};
-					};
+					}; // the intro particle constructor
 			} // the intro stuff
 			{
-				//the track
 				var track = [
 					{
 						x: 0,
@@ -165,38 +140,30 @@
 						x: 600,
 						y: 600
 					}
-				],
-					//the base health
-					baseHealth = 100,
-					//a array to store evil fishs
-					evilFishs = [],
-					//the evil fish constructor
+				], // the track
+					baseHealth = 100, // the base health
+					evilFishs = [], // a array to store evil fishs
 					EvilFish = function(config) {
-						//the position of the fish
-						this.x = track[0].x;
-						this.y = track[0].y;
-						//the current step
-						this.step = 1;
-						//the speed
-						this.speed = config.speed || 1;
-						//did the fish go the the end of the track?
-						//updates the fish
+						this.x = track[0].x; // the position of the fish
+						this.y = track[0].y; // the position of the fish
+						this.step = 1; // the current step
+						this.speed = config.speed || 1; // the speed
+						this.isAtEndOfTrack = false; // did the fish go the the end of the track?
 						this.update = function() {
-							//make the fish follow the track
-							this.x += Math.sin((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed;
-							this.y += Math.cos((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed;
-							//if the fish is at the track
+							this.x += Math.sin((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed; // make the fish follow the track
+							this.y += Math.cos((Math.atan2(this.x - track[this.step].x, this.y - track[this.step].y) * 180 / Math.PI) / 180 * Math.PI) * this.speed; // make the fish follow the track
+							
 							if(Math.round(this.x) === track[this.step].x && Math.round(this.y) === track[this.step].y) {
-								//if the current step is not 3, make it follow the next track
 								if(this.step !== 3) {
-									this.step ++;
-								} else {
-
+									this.step ++; // make it follow the next track
+								} // if the current step is not 3
+								else {
+									this.isAtEndOfTrack = true; // make this.isAtEndOfTrack to true
 								}
-							}
+							}//if the fish is at the track
 
-						};
-					};
+						}; // updates the fish
+					}; // the evil fish constructor
 			} // the game stuff
 			{
 				var backgroundFishies = [], // a array to store the background fishies
@@ -474,3 +441,4 @@
 		</script>
 	</body>
 </html>
+<!--All code by (c) 2020 Titanium Programming-->
