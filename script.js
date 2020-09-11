@@ -379,7 +379,7 @@ console.clear(); // clears the console
     var loop = setInterval(function() {
         try {
             canvas.style.cursor = "default"; // changes the cursor to default
-            system.frames++; // increases the frame counter
+            /*system.frames++; // increases the frame counter
             ctx.clearRect(0, 0, 600, 600); // clears the canvas
             scenes[scene](); // does whats in the current scene
             ctx.textAlign = "left"; // aligns the text to the left
@@ -389,7 +389,9 @@ console.clear(); // clears the console
             ctx.fillStyle = "black"; // fills the fps black
             ctx.fillText("FPS: " + system.fps.fps, 0, 0); // the frames per second
             void(transition.active && (transition.run())); // if the transition is active, run the transition
-            system.mouse.clicked = false; // turns clicked to false
+            system.mouse.clicked = false; // turns clicked to false*/
+			ctx.clearRect(0, 0, 600, 600); // clears the canvas
+			drawFish(300, 300, 275, 120, "red", 0);
         } //trys to catch errors
         catch (err) {
             clearInterval(loop); // stops the loop
