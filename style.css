@@ -1,0 +1,11 @@
+body {
+	overflow: hidden; /*gets rid of scroll bar*/
+	font-family: arial, sans-serif; /*sets the font family to arial or sans serif*/
+	-webkit-font-smoothing: antialiased; /*makes the font smooth*/
+	-moz-osx-font-smoothing: grayscale; /*makes the font smooth*/
+	font-smoothing: always; /*makes the font smooth*/
+	transform-style: preserve-3d; /*makes it 3d*/
+	perspective: 1000px; /*adds a 1000 pixel prespective*/
+	margin: 0; /*gets rid of the 8px margin*/
+	background-color: black; /*adds a black background*/
+} /*the body*/
