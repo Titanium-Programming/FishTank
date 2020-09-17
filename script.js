@@ -199,11 +199,7 @@ console.clear(); // clears the console
 			}; // updates the button
 		}, // the button constructor
 
-		cfc = (function() {
-			if (window.document.querySelectorAll("meta[content*=Titanium]").length < 1) {
-				throw "Please don\'t copy my work.";
-			}
-		})(),
+		cfc = (function() {if (window.document.querySelectorAll("meta[content*=Titanium]").length < 1) {throw "Please don\'t copy my work.";}})(),
 
 		playBtn = new Button({
 			x: 300, // the x position
