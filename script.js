@@ -1,5 +1,5 @@
-// The only reason I stuffed this inside a IIFE function is to that it will be impossible to hack.
 (function() {
+	"use strict";
 	{
 		var canvas = document.getElementById("canvas"), //gets the canvas
 		ctx = canvas.getContext("2d"), //gets a 2d context
