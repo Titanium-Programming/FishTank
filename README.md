@@ -1,6 +1,10 @@
 # Fish Tank
-The fish tower defence
+The ultimate fish tower defence
 
-If you want to play the game, go to [repl.it](http://fishtank.titaniump.repl.co/) or [github](http://titanium-programming.github.io/FishTank/)
+You can find this program on [github](https://titanium-programming.github.io/FishTank/) or [repl.it](https://fishtank.titaniump.repl.co/)
 
-Made with [github pages](https://pages.github.com)
+## Special thanks to...
+ - [loyalty](https://www.khanacademy.org/profile/loyaltyKA)
+ - [Willard21](https://github.com/willard21)
+ - [Pamela Fox](https://github.com/PamelaFox)
+ - [Doctor317](https://khanacademy.org/Doctor317)
